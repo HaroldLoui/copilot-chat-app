@@ -18,9 +18,10 @@
       </div>
       <div class="sidebar-main">
         <template v-if="chatList.length > 0">
-          <chat-box v-for="cb in chatList" :key="cb.id" :value="cb" @close="onBoxClose"></chat-box>
+          <chat-box v-for="cb in chatList" :key="cb.id" :value="cb" @close="onBoxClose" @click="onChooseChat(cb)">
+          </chat-box>
         </template>
-        <chat-box v-else :value="blankChat" @close="onBoxClose"></chat-box>
+        <chat-box v-else :value="blankChat" @close="onBoxClose" @click="onChooseChat(blankChat)"></chat-box>
       </div>
       <div class="sidebar-footer">
         <div class="button-group">
@@ -124,7 +125,9 @@
         </div>
       </div>
     </div>
-    <div class="app-main"></div>
+    <div class="app-main">
+      <chat-room :cb="currentChat"></chat-room>
+    </div>
   </div>
 </template>
 
@@ -141,6 +144,7 @@
 
 import { reactive, ref } from "vue";
 import ChatBox from "./components/ChatBox.vue";
+import ChatRoom from "./components/ChatRoom.vue";
 
 const searchValue = ref<string>("");
 const onSearchChat = () => {
@@ -173,6 +177,13 @@ const onBoxClose = (value: boolean) => {
   } else {
     blankChat.createTime = getNow();
   }
+};
+
+const currentChat = ref<ChatBox>({
+  ...blankChat,
+});
+const onChooseChat = (cb: ChatBox) => {
+  currentChat.value = cb;
 };
 
 const onSetting = () => {
@@ -216,6 +227,7 @@ body {
   box-shadow: 50px 50px 100px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   overflow: hidden;
+  display: flex;
 
   .app-sidebar {
     width: 283px;

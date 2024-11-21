@@ -4,3 +4,10 @@ declare interface ChatBox {
   count: number;
   createTime: string;
 }
+
+declare interface Message {
+  id: string;
+  sender: "AI" | "ME";
+  content: string;
+  createTime: string;
+}
