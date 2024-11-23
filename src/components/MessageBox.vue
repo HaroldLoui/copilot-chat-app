@@ -1,7 +1,7 @@
 <template>
   <div class="message-box">
     <div class="message-header" :class="{ reverse: value.sender === 'ME' }">
-      <div class="avatar"></div>
+      <div class="avatar">{{ value.sender }}</div>
       <div class="send-time">{{ value.createTime }}</div>
     </div>
     <div class="flex-content" :class="{ 'flex-end': value.sender === 'ME' }">
@@ -35,6 +35,11 @@ defineProps<{ value: Message }>();
       height: 32px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #686868;
+      font-weight: bolder;
     }
 
     .send-time {

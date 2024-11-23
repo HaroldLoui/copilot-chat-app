@@ -335,9 +335,6 @@ body {
         cursor: pointer;
         transition: all 0.3s ease;
         overflow: hidden;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
         outline: none;
         border: none;
         color: #000;
