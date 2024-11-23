@@ -142,9 +142,31 @@
 //   greetMsg.value = await invoke("greet", { name: name.value });
 // }
 
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import ChatBox from "./components/ChatBox.vue";
 import ChatRoom from "./components/ChatRoom.vue";
+import { open } from "@tauri-apps/plugin-shell";
+
+onMounted(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const url = link.getAttribute("href");
+        if (isUrl(url)) {
+          open(url!);
+        }
+      });
+    });
+  });
+});
+
+const isUrl = (url: string | null) => {
+  if (!url) {
+    return false;
+  }
+  return url.startsWith("https://") || url.startsWith("http://");
+};
 
 const searchValue = ref<string>("");
 const onSearchChat = () => {
