@@ -98,7 +98,6 @@ const hasScrollBar = ref<boolean>(false);
 // other: 没有消息了
 const loadMore = ref<string>("加载更多...");
 
-// 每次分页查询后置位true
 const isFirstToTop = ref<number>(0);
 const loading = ref<boolean>(false);
 onMounted(() => {
