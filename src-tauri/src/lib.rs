@@ -40,15 +40,15 @@ fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     //     )",
     //     (), // empty list of parameters.
     // )?;
-    let me = Person {
-        id: 0,
-        name: "Steven".to_string(),
-        data: None,
-    };
-    conn.execute(
-        "INSERT INTO person (name, data) VALUES (?1, ?2)",
-        (&me.name, &me.data),
-    )?;
+    // let me = Person {
+    //     id: 0,
+    //     name: "Steven".to_string(),
+    //     data: None,
+    // };
+    // conn.execute(
+    //     "INSERT INTO person (name, data) VALUES (?1, ?2)",
+    //     (&me.name, &me.data),
+    // )?;
 
     let mut stmt = conn.prepare("SELECT id, name, data FROM person")?;
     let person_iter = stmt.query_map([], |row| {

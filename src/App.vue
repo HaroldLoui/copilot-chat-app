@@ -89,8 +89,8 @@
           </button>
         </div>
         <div style="width: 40px"></div>
-        <div class="button-group">
-          <button class="add-chat-btn" @click="onAddChat">
+        <div class="button-group1">
+          <!-- <button class="add-chat-btn" @click="onAddChat">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -121,7 +121,8 @@
               </g>
             </svg>
             <div>添加聊天</div>
-          </button>
+          </button> -->
+          <Button class="add-chat-btn" @click="onAddChat">添加聊天</Button>
         </div>
       </div>
     </div>
@@ -145,6 +146,7 @@
 import { onMounted, reactive, ref } from "vue";
 import ChatBox from "./components/ChatBox.vue";
 import ChatRoom from "./components/ChatRoom.vue";
+import Button from "./components/common/Button.vue";
 import { open } from "@tauri-apps/plugin-shell";
 
 onMounted(() => {
@@ -378,7 +380,7 @@ body {
         justify-content: space-around;
         height: 100%;
 
-        .add-chat-btn {
+        .add-chat-btn1 {
           div {
             margin-left: 5px;
             font-size: 14px;
