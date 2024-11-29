@@ -1,7 +1,11 @@
 <template>
   <div class="message-box">
     <div class="message-header" :class="{ reverse: value.sender === 'ME' }">
-      <div class="avatar">{{ value.sender }}</div>
+      <div class="avatar">
+        <vs-avatar color="rgb(160, 240, 229)">
+          <i class="bx" :class="{ 'bx-terminal': value.sender === 'AI', 'bx-face': value.sender === 'ME' }"></i>
+        </vs-avatar>
+      </div>
       <div class="send-time">{{ value.createTime }}</div>
     </div>
     <div class="flex-content" :class="{ 'flex-end': value.sender === 'ME' }">
@@ -19,9 +23,13 @@ import "md-editor-v3/lib/preview.css";
 defineProps<{ value: Message }>();
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .message-box {
   margin-top: 25px;
+
+  &:last-child {
+    margin-bottom: 15px;
+  }
 
   .message-header {
     display: flex;
@@ -31,15 +39,8 @@ defineProps<{ value: Message }>();
     gap: 15px;
 
     .avatar {
-      width: 32px;
-      height: 32px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #686868;
-      font-weight: bolder;
+      width: 44px;
+      height: 44px;
     }
 
     .send-time {
