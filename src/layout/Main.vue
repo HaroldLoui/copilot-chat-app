@@ -117,6 +117,17 @@ const senderInfo = ref<string>("213");
     &::-webkit-scrollbar {
       width: 0;
     }
+
+    .load-more {
+      text-align: center;
+      font-size: 12px;
+      color: rgb(var(--vs-success-light-3));
+      cursor: pointer;
+
+      &:hover {
+        color: rgb(var(--vs-success-light-7));
+      }
+    }
   }
 
   .chat-sender {
