@@ -87,10 +87,10 @@ const chatList = ref<ChatBox[]>([]);
   justify-content: space-around;
 
   .title {
-    height: 60px;
-    line-height: 60px;
+    height: 50px;
+    line-height: 50px;
     text-align: center;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: bolder;
   }
 

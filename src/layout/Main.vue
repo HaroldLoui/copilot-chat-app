@@ -2,13 +2,34 @@
   <div class="chat-room">
     <div class="chat-title">默认对话</div>
     <div class="chat-messages" id="scrollableContent">
-      <div v-if="loadMore" class="load-more">加载更多...</div>
+      <div v-if="hasNextPage" class="load-more">加载更多...</div>
       <template v-for="i in messageCount" :key="i">
         <MessageBox v-if="i % 2 === 0" :value="aiMessage"></MessageBox>
         <MessageBox v-else :value="meMessage"></MessageBox>
       </template>
     </div>
-    <div class="chat-sender"></div>
+    <div class="chat-sender">
+      <div class="sender-toolbar">
+        <vs-button icon color="#909399" type="border">
+          <i class="bx bx-smile"></i>
+        </vs-button>
+        <vs-button icon color="#909399" type="border">
+          <i class="bx bxs-image"></i>
+        </vs-button>
+        <vs-button icon color="#909399" type="border">
+          <i class="bx bxs-invader"></i>
+        </vs-button>
+      </div>
+      <div class="sender-box">
+        <textarea class="content-input">{{ senderInfo }}</textarea>
+        <div class="sender-btn">
+          <vs-button type="relief">
+            <i class="bx bxs-paper-plane"></i>
+            发送
+          </vs-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -16,24 +37,24 @@
 import { nextTick, onMounted, reactive, ref } from "vue";
 import MessageBox from "../components/MessageBox.vue";
 
-const loadMore = ref<boolean>(false);
-const content = document.getElementById("scrollableContent")!;
+const hasNextPage = ref<boolean>(false);
 onMounted(() => {
-  scrollToTopListener();
+  const content = document.getElementById("scrollableContent")!;
+  scrollToTopListener(content);
   nextTick(() => {
-    scrollToBottom();
-    loadMore.value = true;
+    scrollToBottom(content);
+    hasNextPage.value = true;
   });
 });
 
-const scrollToBottom = () => {
+const scrollToBottom = (content: HTMLElement) => {
   setTimeout(() => {
     content.scrollTop = content.scrollHeight;
-  }, 300);
+  }, 200);
 };
 
 const isAtTop = ref<boolean>(false);
-const scrollToTopListener = () => {
+const scrollToTopListener = (content: HTMLElement) => {
   content.addEventListener("scroll", () => {
     if (content.scrollTop === 0) {
       if (isAtTop.value) {
@@ -64,6 +85,8 @@ const meMessage = reactive<Message>({
   content: "#12313",
   createTime: "2024年11月30日 15:35:50",
 });
+
+const senderInfo = ref<string>("213");
 </script>
 
 <style lang="scss" scoped>
@@ -100,6 +123,43 @@ const meMessage = reactive<Message>({
     height: 180px;
     border-top: 1px solid #ccc;
     background-color: #fff;
+
+    .sender-toolbar {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .sender-box {
+      position: relative;
+      padding: 10px;
+      padding-top: 0;
+
+      .content-input {
+        height: 110px;
+        display: inline-block;
+        padding: 10px 90px 10px 10px;
+        width: 100%;
+        border-color: #ccc;
+        border-radius: 5px;
+        resize: none;
+        &::-webkit-scrollbar {
+          width: 0;
+        }
+        &:focus {
+          border-color: rgba(var(--vs-primary-light-5));
+        }
+      }
+
+      .sender-btn {
+        position: absolute;
+        bottom: 25px;
+        right: 10px;
+        width: 90px;
+        height: 40px;
+      }
+    }
   }
 }
 </style>
