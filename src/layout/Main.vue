@@ -3,10 +3,8 @@
     <div class="chat-title">默认对话</div>
     <div class="chat-messages" id="scrollableContent">
       <div v-if="hasNextPage" class="load-more">加载更多...</div>
-      <template v-for="i in messageCount" :key="i">
-        <MessageBox v-if="i % 2 === 0" :value="aiMessage"></MessageBox>
-        <MessageBox v-else :value="meMessage"></MessageBox>
-      </template>
+      <MessageBox :value="meMessage"></MessageBox>
+      <MessageBox :value="aiMessage"></MessageBox>
     </div>
     <div class="chat-sender">
       <div class="sender-toolbar">
@@ -23,7 +21,7 @@
       <div class="sender-box">
         <textarea class="content-input">{{ senderInfo }}</textarea>
         <div class="sender-btn">
-          <vs-button type="relief">
+          <vs-button type="relief" @click="onSendMessage">
             <i class="bx bxs-paper-plane"></i>
             发送
           </vs-button>
@@ -36,6 +34,8 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
 import MessageBox from "../components/MessageBox.vue";
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 const hasNextPage = ref<boolean>(false);
 onMounted(() => {
@@ -44,6 +44,11 @@ onMounted(() => {
   nextTick(() => {
     scrollToBottom(content);
     hasNextPage.value = true;
+  });
+  listen("chat:message://received", (event) => {
+    console.log(event.payload);
+    aiMessage.content = aiMessage.content + event.payload;
+    scrollToBottom(content);
   });
 });
 
@@ -69,9 +74,9 @@ const scrollToTopListener = (content: HTMLElement) => {
   });
 };
 
-const messageCount = ref<number>(4);
+const messageCount = ref<number>(1);
 const md = ref<string>(
-  "# Tauri + Vue + TypeScript\nThis template should help get you starteemplate should help get you starteemplate should help get you starteemplate should help get you starteemplate should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more."
+  "# Tauri + Vue + TypeScript\nThis template should help get you starteemplate should help get you starteemplate should help get you starteemplate should help get you starteemplate should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.\n#####1"
 );
 const aiMessage = reactive<Message>({
   id: "1",
@@ -87,6 +92,14 @@ const meMessage = reactive<Message>({
 });
 
 const senderInfo = ref<string>("213");
+
+// async function greet() {
+//   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+//   greetMsg.value = await invoke("send_message", { name: name.value });
+// }
+const onSendMessage = async () => {
+  await invoke("send_message", { content: senderInfo.value, chat_id: 1 });
+};
 </script>
 
 <style lang="scss" scoped>
