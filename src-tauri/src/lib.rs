@@ -2,7 +2,6 @@ mod controller;
 mod dao;
 mod entity;
 
-use controller::send_message;
 use static_init::dynamic;
 
 use dao::sql::check_db;
@@ -12,6 +11,9 @@ use std::sync::Mutex;
 use rusqlite::Connection;
 use tauri::{App, Manager};
 
+use controller::{chat_box_controller::*, message_controller::*};
+pub use entity::big_number_serializer;
+
 #[dynamic]
 pub static mut ID_WORKER: SnowflakeIdBucket = SnowflakeIdBucket::new(1, 1);
 
@@ -20,9 +22,16 @@ pub fn run() {
     tauri::Builder::default()
         .setup(setup)
         .plugin(tauri_plugin_shell::init())
-        .plugin(controller::chat_box_dao_apis())
-        .plugin(controller::message_dao_apis())
-        .invoke_handler(tauri::generate_handler![send_message])
+        .invoke_handler(tauri::generate_handler![
+            list_chat_box_api,
+            insert_chat_box_api,
+            update_chat_box_title_api,
+            delete_chat_box_api,
+            list_message_api,
+            insert_me_message_api,
+            insert_ai_message_api,
+            send_message
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

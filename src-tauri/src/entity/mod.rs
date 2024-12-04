@@ -4,7 +4,7 @@ mod message;
 pub use chat_box::ChatBox;
 pub use message::*;
 
-pub mod my_date_format {
+pub mod datetime_format {
     use chrono::NaiveDateTime;
     use serde::{self, Deserialize, Deserializer, Serializer};
 
@@ -24,5 +24,24 @@ pub mod my_date_format {
     {
         let s = String::deserialize(deserializer)?;
         NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
+    }
+}
+
+pub mod big_number_serializer {
+    use serde::{self, Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(num: &i64, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&num.to_string())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<i64, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        i64::from_str_radix(&s, 10).map_err(serde::de::Error::custom)
     }
 }

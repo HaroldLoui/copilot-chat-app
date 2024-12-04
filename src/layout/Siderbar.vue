@@ -11,8 +11,14 @@
   </div>
   <div class="siderbar-main">
     <div class="chat-list">
-      <ChatBox active></ChatBox>
-      <ChatBox v-for="i in 20" :key="i"></ChatBox>
+      <ChatBox
+        v-for="(chat, i) in chatList"
+        :key="i"
+        :value="chat"
+        :active="activeIndex === i"
+        @click="handleChooseChat(i, chat)"
+        @delete="handleDeleteChat"
+      ></ChatBox>
     </div>
   </div>
   <div class="siderbar-footer">
@@ -25,57 +31,75 @@
         <i class="bx bxl-github"></i>
         <template #animate> 源码 </template>
       </vs-button>
-      <vs-button type="flat" color="success" animation-type="scale" style="width: 100px">
+      <vs-button type="flat" color="success" animation-type="scale" style="width: 100px" @click="handleAddChat">
         <i class="bx bx-plus"></i>
         <template #animate> 添加聊天 </template>
       </vs-button>
     </div>
   </div>
+
+  <vs-dialog v-model="deleteChatDialog" width="550px" not-center>
+    <template #header>
+      <h6 class="not-margin"></h6>
+    </template>
+
+    <div class="con-content">
+      <p>删除后不可恢复！确认删除该对话？</p>
+    </div>
+
+    <template #footer>
+      <div class="con-footer">
+        <vs-button type="transparent" @click="invokeDeleteChat"> 确认 </vs-button>
+        <vs-button color="danger" type="transparent" @click="deleteChatDialog = false"> 取消 </vs-button>
+      </div>
+    </template>
+  </vs-dialog>
 </template>
 
 <script setup lang="ts">
-// import { ref } from "vue";
-// import { invoke } from "@tauri-apps/api/core";
-// const greetMsg = ref("");
-// const name = ref("");
+import { onMounted, ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
 
-// async function greet() {
-//   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-//   greetMsg.value = await invoke("greet", { name: name.value });
-// }
-
-import { onMounted, reactive, ref } from "vue";
 import ChatBox from "../components/ChatBox.vue";
 
 onMounted(() => {
   onSearchChat();
-  console.log(chatList, blankChat);
 });
 
 const searchValue = ref<string>("");
 const onSearchChat = () => {
   console.log(searchValue.value);
+  getChatList();
 };
 
-const getNow = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-
-  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
-};
-
-const blankChat = reactive<ChatBox>({
-  id: "",
-  title: "默认对话",
-  count: 0,
-  createTime: getNow(),
-});
 const chatList = ref<ChatBox[]>([]);
+const activeIndex = ref<number>(0);
+const getChatList = async () => {
+  chatList.value = await invoke("list_chat_box_api", { title: searchValue.value });
+};
+
+const handleAddChat = async () => {
+  await invoke("insert_chat_box_api");
+  getChatList();
+};
+
+const emits = defineEmits(["changeChat"]);
+const handleChooseChat = (i: number, chat: ChatBox) => {
+  activeIndex.value = i;
+  emits("changeChat", chat);
+};
+
+const deleteChatDialog = ref<boolean>(false);
+const deleteChatId = ref<string>("");
+const handleDeleteChat = (id: string | number) => {
+  deleteChatId.value = id.toString();
+  deleteChatDialog.value = true;
+};
+const invokeDeleteChat = async () => {
+  await invoke("delete_chat_box_api", { id: deleteChatId.value });
+  getChatList();
+  deleteChatDialog.value = false;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -126,6 +150,35 @@ const chatList = ref<ChatBox[]>([]);
     display: flex;
     align-items: center;
     justify-content: space-around;
+  }
+}
+
+.not-margin {
+  margin: 0px;
+  font-weight: normal;
+  padding: 10px;
+}
+
+.con-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: calc(100%);
+  .new {
+    margin: 0px;
+    margin-top: 20px;
+    padding: 0px;
+    font-size: 0.7rem;
+    a {
+      color: rgba(var(--vs-primary)) !important;
+      margin-left: 6px;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .vs-button {
+    margin: 0px;
   }
 }
 </style>

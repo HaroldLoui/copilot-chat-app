@@ -28,7 +28,7 @@ pub fn list_chat_box(conn: &Connection, title: Option<String>) -> Result<Vec<Cha
 
 pub fn insert_chat_box(conn: &Connection, chat_box: ChatBox) -> Result<()> {
     conn.execute(
-        "INSERT INTO chat_box(id, title, create_time)",
+        "INSERT INTO chat_box(id, title, create_time) VALUES (?1, ?2, ?3)",
         (&chat_box.id, &chat_box.title, &chat_box.create_time),
     )?;
     Ok(())

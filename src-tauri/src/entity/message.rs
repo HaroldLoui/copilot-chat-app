@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use chrono::{NaiveDateTime, Utc};
+use chrono::{Local, NaiveDateTime};
 use rusqlite::{
     types::{FromSql, FromSqlError},
     ToSql,
@@ -46,11 +46,12 @@ impl Display for Sender {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Message {
+    #[serde(with = "super::big_number_serializer")]
     pub id: i64,
     pub chat_id: i64,
     pub sender: Sender,
     pub content: String,
-    #[serde(with = "super::my_date_format")]
+    #[serde(with = "super::datetime_format")]
     pub create_time: NaiveDateTime,
 }
 
@@ -61,7 +62,7 @@ impl Message {
             chat_id: 0,
             sender: Sender::ME,
             content: "".to_string(),
-            create_time: Utc::now().naive_local(),
+            create_time: Local::now().naive_local(),
         }
     }
 
@@ -71,7 +72,7 @@ impl Message {
             chat_id: 0,
             sender: Sender::AI,
             content: "".to_string(),
-            create_time: Utc::now().naive_local(),
+            create_time: Local::now().naive_local(),
         }
     }
 }

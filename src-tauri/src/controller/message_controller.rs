@@ -9,23 +9,23 @@ use super::{message_dao::*, Message};
 #[tauri::command(rename_all = "snake_case")]
 pub fn list_message_api(
     state: State<AppData>,
-    chat_id: i64,
+    chat_id: String,
     page_num: usize,
 ) -> Result<Vec<Message>, String> {
     let conn = state.conn.lock().unwrap();
     let cursor = (page_num - 1) * 10;
-    list_message(&conn, chat_id, cursor).map_err(|e| e.to_string())
+    list_message(&conn, i64::from_str_radix(&chat_id, 10).unwrap_or_default(), cursor).map_err(|e| e.to_string())
 }
 
 #[tauri::command(rename_all = "snake_case")]
 pub fn insert_me_message_api(
     state: State<AppData>,
-    chat_id: i64,
+    chat_id: String,
     content: String,
 ) -> Result<(), String> {
     let conn = state.conn.lock().unwrap();
     let message = Message {
-        chat_id,
+        chat_id: i64::from_str_radix(&chat_id, 10).unwrap_or_default(),
         content,
         ..Message::me()
     };
@@ -36,12 +36,12 @@ pub fn insert_me_message_api(
 #[tauri::command(rename_all = "snake_case")]
 pub fn insert_ai_message_api(
     state: State<AppData>,
-    chat_id: i64,
+    chat_id: String,
     content: String,
 ) -> Result<(), String> {
     let conn = state.conn.lock().unwrap();
     let message = Message {
-        chat_id,
+        chat_id: i64::from_str_radix(&chat_id, 10).unwrap_or_default(),
         content,
         ..Message::ai()
     };
@@ -52,12 +52,12 @@ pub fn insert_ai_message_api(
 pub fn send_message(
     app: AppHandle,
     state: State<AppData>,
-    chat_id: i64,
+    chat_id: String,
     content: String,
 ) -> Result<(), String> {
     let conn = state.conn.lock().unwrap();
     let message = Message {
-        chat_id,
+        chat_id: i64::from_str_radix(&chat_id, 10).unwrap_or_default(),
         content,
         ..Message::me()
     };

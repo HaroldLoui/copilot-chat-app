@@ -1,23 +1,26 @@
 <template>
   <div class="chat-box" :class="{ active: props.active }">
-    <div class="title">默认对话</div>
+    <div class="title">{{ value.title }}</div>
     <div class="sub-title">
-      <div class="count">共0条对话</div>
-      <div class="time">2024年11月30日 15:35:50</div>
+      <div class="count">共{{ value.count }}条对话</div>
+      <div class="time">{{ value.createTime }}</div>
     </div>
-    <div class="close-btn">
+    <div class="close-btn" @click="handleDeleteChat">
       <i class="bx bx-x-circle"></i>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-  active: {
-    type: Boolean,
-    default: false,
-  },
-});
+const props = defineProps<{
+  value: ChatBox;
+  active?: Boolean;
+}>();
+
+const emits = defineEmits(["delete"]);
+const handleDeleteChat = () => {
+  emits("delete", props.value.id);
+};
 </script>
 
 <style lang="scss" scoped>

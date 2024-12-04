@@ -1,6 +1,16 @@
 <template>
   <div class="chat-room">
-    <div class="chat-title">默认对话</div>
+    <div class="chat-title-box">
+      <div class="title">
+        <vs-input v-if="editMode" v-model="value.title" input-style="border" @keyup.enter.native="handleEditTitle" />
+        <span v-else>{{ value.title }}</span>
+      </div>
+      <div class="buttons">
+        <vs-button icon color="success" type="border" @click="enterEditMode">
+          <i class="bx bx-edit"></i>
+        </vs-button>
+      </div>
+    </div>
     <div class="chat-messages" id="scrollableContent">
       <div v-if="hasNextPage" class="load-more">加载更多...</div>
       <MessageBox :value="meMessage"></MessageBox>
@@ -36,6 +46,20 @@ import { nextTick, onMounted, reactive, ref } from "vue";
 import MessageBox from "../components/MessageBox.vue";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+
+const props = defineProps<{
+  value: ChatBox;
+}>();
+const editMode = ref<boolean>(false);
+const enterEditMode = () => {
+  editMode.value = true;
+};
+const handleEditTitle = async () => {
+  const id = props.value.id;
+  const title = props.value.title;
+  await invoke("update_chat_box_title_api", { id: id.toString(), title });
+  editMode.value = false;
+};
 
 const hasNextPage = ref<boolean>(false);
 onMounted(() => {
@@ -80,12 +104,14 @@ const md = ref<string>(
 );
 const aiMessage = reactive<Message>({
   id: "1",
+  chatId: "1",
   sender: "AI",
   content: md.value,
   createTime: "2024年11月30日 15:35:50",
 });
 const meMessage = reactive<Message>({
   id: "2",
+  chatId: "1",
   sender: "ME",
   content: "#12313",
   createTime: "2024年11月30日 15:35:50",
@@ -93,12 +119,8 @@ const meMessage = reactive<Message>({
 
 const senderInfo = ref<string>("213");
 
-// async function greet() {
-//   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-//   greetMsg.value = await invoke("send_message", { name: name.value });
-// }
 const onSendMessage = async () => {
-  await invoke("send_message", { content: senderInfo.value, chat_id: 1 });
+  await invoke("send_message", { content: senderInfo.value, chat_id: "1" });
 };
 </script>
 
@@ -110,14 +132,32 @@ const onSendMessage = async () => {
   flex-direction: column;
   justify-content: space-around;
 
-  .chat-title {
+  .chat-title-box {
+    display: flex;
     height: 60px;
-    line-height: 60px;
-    font-size: 20px;
-    font-weight: bolder;
     background-color: #fff;
     border-bottom: 1px solid #ccc;
-    padding-left: 20px;
+
+    .title {
+      width: 70%;
+      height: 60px;
+      line-height: 60px;
+      font-size: 20px;
+      font-weight: bolder;
+      padding-left: 20px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .buttons {
+      width: 30%;
+      height: 60px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-right: 10px;
+    }
   }
 
   .chat-messages {
